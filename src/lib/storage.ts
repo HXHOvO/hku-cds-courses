@@ -17,6 +17,7 @@ import { SEED_COURSES } from '../data/courses'
 const COURSES_KEY = 'ecic.courses.draft.v1'
 const RATINGS_KEY = 'ecic.myRatings.v1'
 const FAVORITES_KEY = 'ecic.favorites.v1'
+const COMPARE_KEY = 'ecic.compareList.v1'
 
 /* ------------------------------ 课程数据 ------------------------------ */
 
@@ -103,6 +104,36 @@ export function saveFavorites(favorites: string[]): void {
 export function clearFavoritesStorage(): void {
   try {
     localStorage.removeItem(FAVORITES_KEY)
+  } catch {
+    /* 忽略 */
+  }
+}
+
+/* ------------------------------ 对比 ------------------------------ */
+
+export function loadCompareList(): string[] {
+  try {
+    const raw = localStorage.getItem(COMPARE_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter((x): x is string => typeof x === 'string')
+  } catch {
+    return []
+  }
+}
+
+export function saveCompareList(list: string[]): void {
+  try {
+    localStorage.setItem(COMPARE_KEY, JSON.stringify(list))
+  } catch {
+    /* 忽略 */
+  }
+}
+
+export function clearCompareListStorage(): void {
+  try {
+    localStorage.removeItem(COMPARE_KEY)
   } catch {
     /* 忽略 */
   }

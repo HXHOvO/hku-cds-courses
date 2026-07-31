@@ -9,7 +9,7 @@ const navCls = ({ isActive }: { isActive: boolean }) =>
   }`
 
 export function Layout() {
-  const { favorites } = useStore()
+  const { favorites, compareList } = useStore()
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -27,17 +27,21 @@ export function Layout() {
             <NavLink to="/assistant" className={navCls}>
               选课小助手
             </NavLink>
+            <NavLink to="/compare" className={navCls}>
+              <span className="inline-flex items-center gap-1.5">
+                对比
+                {compareList.length > 0 && (
+                  <span className="inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-sky-100 px-1.5 text-xs font-semibold text-sky-700">
+                    {compareList.length}
+                  </span>
+                )}
+              </span>
+            </NavLink>
             <NavLink to="/favorites" className={navCls}>
               <span className="inline-flex items-center gap-1.5">
                 我的收藏
                 {favorites.length > 0 && (
-                  <span
-                    className={`inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 text-xs font-semibold ${
-                      favorites.length > 0
-                        ? 'bg-amber-100 text-amber-700'
-                        : ''
-                    }`}
-                  >
+                  <span className="inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-amber-100 px-1.5 text-xs font-semibold text-amber-700">
                     {favorites.length}
                   </span>
                 )}

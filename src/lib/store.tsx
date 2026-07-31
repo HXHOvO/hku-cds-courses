@@ -9,12 +9,15 @@ import {
 } from 'react'
 import type { Course } from '../types'
 import {
+  clearCompareListStorage,
   clearFavoritesStorage,
   clearMyRatings,
+  loadCompareList,
   loadCourses,
   loadFavorites,
   loadMyRatings,
   resetCourses,
+  saveCompareList,
   saveCourses,
   saveFavorites,
   saveMyRatings,
@@ -38,6 +41,13 @@ interface StoreValue {
   isFavorite: (code: string) => boolean
   clearFavorites: () => void
 
+  /** 加入对比的课程编号列表，最多 3 门 */
+  compareList: string[]
+  toggleCompare: (code: string) => void
+  isInCompare: (code: string) => boolean
+  removeFromCompare: (code: string) => void
+  clearCompare: () => void
+
   /** 管理员是否已解锁（仅本次会话有效） */
   isAdmin: boolean
   setIsAdmin: (v: boolean) => void
@@ -49,6 +59,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [courses, setCoursesState] = useState<Course[]>(() => loadCourses())
   const [myRatings, setMyRatings] = useState<MyRatings>(() => loadMyRatings())
   const [favorites, setFavorites] = useState<string[]>(() => loadFavorites())
+  const [compareList, setCompareList] = useState<string[]>(() => loadCompareList())
   const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
@@ -58,6 +69,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     saveFavorites(favorites)
   }, [favorites])
+
+  useEffect(() => {
+    saveCompareList(compareList)
+  }, [compareList])
 
   const setCourses = useCallback((next: Course[]) => {
     setCoursesState(next)
@@ -102,6 +117,30 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setFavorites([])
   }, [])
 
+  const COMPARE_MAX = 3
+
+  const toggleCompare = useCallback((code: string) => {
+    setCompareList((prev) => {
+      if (prev.includes(code)) return prev.filter((c) => c !== code)
+      if (prev.length >= COMPARE_MAX) return prev
+      return [...prev, code]
+    })
+  }, [])
+
+  const isInCompare = useCallback(
+    (code: string) => compareList.includes(code),
+    [compareList],
+  )
+
+  const removeFromCompare = useCallback((code: string) => {
+    setCompareList((prev) => prev.filter((c) => c !== code))
+  }, [])
+
+  const clearCompare = useCallback(() => {
+    clearCompareListStorage()
+    setCompareList([])
+  }, [])
+
   const value = useMemo<StoreValue>(
     () => ({
       courses,
@@ -115,6 +154,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       toggleFavorite,
       isFavorite,
       clearFavorites,
+      compareList,
+      toggleCompare,
+      isInCompare,
+      removeFromCompare,
+      clearCompare,
       isAdmin,
       setIsAdmin,
     }),
@@ -130,6 +174,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       toggleFavorite,
       isFavorite,
       clearFavorites,
+      compareList,
+      toggleCompare,
+      isInCompare,
+      removeFromCompare,
+      clearCompare,
       isAdmin,
     ],
   )
