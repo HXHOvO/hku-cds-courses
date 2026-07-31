@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import { useStore } from '../lib/store'
 
 const navCls = ({ isActive }: { isActive: boolean }) =>
   `rounded-lg px-3 py-1.5 text-sm font-medium transition ${
@@ -8,6 +9,7 @@ const navCls = ({ isActive }: { isActive: boolean }) =>
   }`
 
 export function Layout() {
+  const { favorites } = useStore()
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -24,6 +26,22 @@ export function Layout() {
             </NavLink>
             <NavLink to="/assistant" className={navCls}>
               选课小助手
+            </NavLink>
+            <NavLink to="/favorites" className={navCls}>
+              <span className="inline-flex items-center gap-1.5">
+                我的收藏
+                {favorites.length > 0 && (
+                  <span
+                    className={`inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 text-xs font-semibold ${
+                      favorites.length > 0
+                        ? 'bg-amber-100 text-amber-700'
+                        : ''
+                    }`}
+                  >
+                    {favorites.length}
+                  </span>
+                )}
+              </span>
             </NavLink>
             <NavLink to="/admin" className={navCls}>
               管理
